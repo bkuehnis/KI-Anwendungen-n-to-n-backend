@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 
 import pickle
 import os
@@ -32,8 +32,8 @@ def load_mnist_model():
     # substitute in your own networks just as easily)
     global mnist_model
         # create prediction
-    mnist_model = KNeighborsClassifier(n_neighbors=4, weights='distance')
-    model_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "knn_clf.pkl")
+    mnist_model = MLPClassifier(hidden_layer_sizes=[16])
+    model_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mlp_clf.pkl")
     with open(model_filename, 'rb') as f:
         mnist_model = pickle.load(f)
 
@@ -59,7 +59,7 @@ def predict_mnist():
 
         buffered = BytesIO()
         im28x28.save(buffered, format="PNG")
-        # im28x28.save('canvas2.png')
+        im28x28.save('canvas2.png')
         img_str = base64.b64encode(buffered.getvalue())
         img_base64 = bytes("data:image/png;base64,", encoding='utf-8') + img_str
         return json.dumps({'image': str(img_base64.decode('utf-8')), 'prediction': predicted_number[0]}), 200, {'ContentType': 'application/json'}
