@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 import pickle
 import os
@@ -32,8 +32,9 @@ def load_mnist_model():
     # substitute in your own networks just as easily)
     global mnist_model
         # create prediction
-    mnist_model = MLPClassifier(hidden_layer_sizes=[16])
-    model_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mlp_clf.pkl")
+    mnist_model = KNeighborsClassifier(n_neighbors=4, weights='distance')
+    model_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "knn_clf.pkl")
+    print(model_filename)
     with open(model_filename, 'rb') as f:
         mnist_model = pickle.load(f)
 
@@ -90,8 +91,8 @@ def predict():
 def hello_world():
 
     print(request.args)
-
-    return "<p>Hello, World!</p>"
+    model_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mlp_clf.pkl")
+    return "<p>Hello, World!</p> " + model_filename
     
 # if this is the main thread of execution first load the model and
 # then start the server
